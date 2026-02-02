@@ -1,13 +1,22 @@
 import { Server } from "node:http";
 import mongoose from "mongoose";
 import express from "express";
+import cookieParser from "cookie-parser";
 import {connectDB} from "./configs/db.js"
 import { errorHandler } from "./middlewares/error.middleware.js";
+import { router } from "./routes/index.js";
+import { checkAuth } from "./modules/auth/middlewares/auth.middleware.js";
 
 const app = express();
 const PORT = 5000;
 
 app.use(express.json());
+app.use(cookieParser());
+
+app.use("/api", router);
+app.get("/server-health", checkAuth, (req, res) => {
+  res.send('Ok Baby...')
+})
 
 app.use(errorHandler);
 
