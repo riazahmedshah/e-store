@@ -1,7 +1,8 @@
 import { ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
 
-export const errorHandler: ErrorRequestHandler = (err, _, res) => {
+export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  // console.log("Global Error Handler triggered!");
   let statusCode = err.statusCode || 500;
   let message = err.message || "Internal Server Error";
   let details = err.details || undefined;

@@ -4,19 +4,17 @@ import { User } from "@/models/user.model.js";
 import { AppError } from "@/utils/appError.js";
 import { ResponseHandle } from "@/utils/responseHandler.js";
 import { createToken } from "@/modules/auth/utils/createToken.js";
+import { asyncHandler } from "../../../utils/asyncHandler.js";
 
-export const resgister = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
+export const resgister = asyncHandler(async (req: Request,res: Response,next: NextFunction) => {
     const {data, success, error} = signupSchema.safeParse(req.body);
     if(!success) throw error;
     const {name, email, password} = data;
 
     const isUserExists = await User.findOne({email});
-    if(isUserExists) throw new AppError('User Already Exists', 409);
+    if(isUserExists) {
+      throw new AppError('User Already Exists', 409)
+    };
 
     const user = await User.create({
       name,
@@ -34,7 +32,5 @@ export const resgister = async (
     })
 
     return ResponseHandle.success(res,'Account created!', user, 201)
-  } catch (error) {
-    next(error);
-  }
-};
+  
+});
