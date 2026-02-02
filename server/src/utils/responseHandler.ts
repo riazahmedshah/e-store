@@ -3,7 +3,7 @@ import { Response } from "express";
 export class ResponseHandle {
   static success(
     res: Response,
-    message: string,
+    message: string | null,
     data: any = null,
     status = 200,
   ) {

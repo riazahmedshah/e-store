@@ -4,13 +4,13 @@ import { loginSchema } from "../schemas/auth.schema.js";
 import { AppError } from "@/utils/appError.js";
 import { createToken } from "../utils/createToken.js";
 import { ResponseHandle } from "@/utils/responseHandler.js";
+import { asyncHandler } from "@/utils/asyncHandler.js";
 
-export const login = async (
+export const login = asyncHandler(async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  try {
     const {data, success, error} = loginSchema.safeParse(req.body);
     if(!success) throw error;
     const {email, password} = data;
@@ -31,7 +31,4 @@ export const login = async (
     });
 
     return ResponseHandle.success(res, "Login successful!", user);
-  } catch (error) {
-    next(error);
-  }
-};
+});
