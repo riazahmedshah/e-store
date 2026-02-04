@@ -5,6 +5,7 @@ export interface IUser extends Document {
   name:string;
   email:string;
   password:string;
+  image?:string;
   role: 'user' | 'superAdmin' | 'admin'
   isPasswordMatch(password:string):Promise<boolean>;
   createdAt: Date;
@@ -26,6 +27,10 @@ const userSchema = new Schema<IUser>({
     minLength: 6,
     select: false
   },
+  image:{
+    type: String,
+    default: 'users/default/10.webp'
+  },
   role:{
     type: String,
     enum: ["user", "admin", "superAdmin"],
@@ -37,6 +42,7 @@ const userSchema = new Schema<IUser>({
   toJSON:{
     transform: (doc, ret: Partial<IUser>) => {
       delete ret.password;
+      ret.image = `https://pub-8272d00df7934560aa9675a2512365dc.r2.dev/${ret.image}`
       return ret;
     }
   }

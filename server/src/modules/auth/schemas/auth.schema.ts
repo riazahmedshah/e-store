@@ -1,10 +1,10 @@
+import { passwordZodSchema, userNameZodSchema } from "@/modules/user/schemas/user.schema.js";
 import { z } from "zod";
 
 const emailZodSchema = z.email('EMAIL_IS_INVALID');
-const passwordZodSchema = z.string().min(6, "PASSWORD_TOO_SHORT");
 
 export const signupSchema = z.object({
-  name:z.string().min(1, 'NAME_IS_REQUIRED').max(30, 'NAME_TOO_LONG'),
+  name:userNameZodSchema,
   email: emailZodSchema,
   password: passwordZodSchema
 });
