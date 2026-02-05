@@ -3,9 +3,7 @@ import { AppError } from "@/utils/appError.js";
 import { asyncHandler } from "@/utils/asyncHandler.js";
 import { ResponseHandle } from "@/utils/responseHandler.js";
 import { NextFunction, Request, Response } from "express";
-import { profilePhotoSchema, updateProfileSchema } from "../schemas/user.schema.js";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { getS3Client } from "@/configs/s3Client.js";
+import { photoSchema, updateProfileSchema } from "../schemas/user.schema.js";
 import { removeUndefinedFromObject } from "@/utils/removeUndefinedFromObject.js";
 import { UploadService } from "../services/upload.service.js";
 
@@ -30,7 +28,7 @@ export const updateProfile = asyncHandler(async(req:Request, res:Response, next:
   const result = await updateProfileSchema.parseAsync(updatedUserData);
 
   if(profilePhoto){
-    const { success, error} = profilePhotoSchema.safeParse(profilePhoto);
+    const { success, error} = photoSchema.safeParse(profilePhoto);
     if(!success) throw error;
     try {
       const path = await UploadService.uploadProfileImage(userId as string, profilePhoto.buffer, userToUpdate.image) 

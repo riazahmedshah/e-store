@@ -10,7 +10,7 @@ const upload = multer({
 const router = Router();
 
 router.post("/logout", logout);
-router.get("/profile", profile);
-router.put("/profile/:id", upload.single('profilePhoto'),updateProfile)
+router.get("/", profile);
+router.put("/:id", upload.single('profilePhoto'),updateProfile)
 
 export {router as userRouter};

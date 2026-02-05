@@ -1,9 +1,12 @@
-
-import { authRouter } from "@/modules/auth/routes/index.js";
-import { userRouter } from "@/modules/user/routes/routes.js";
+import { checkAuth } from "@/middlewares/auth.middleware.js";
+import { checkRoles } from "@/middlewares/role.middleware.js";
+import { authRouter } from "@/modules/auth/routes/auth.routes.js";
+import { categoryRouter } from "@/modules/category/routes/routes.js";
+import { userRouter } from "@/modules/user/routes/user.routes.js";
 import { Router } from "express";
 
 export const router = Router();
 
 router.use("/auth", authRouter);
-router.use("/user", userRouter);
+router.use("/users", checkAuth,userRouter);
+router.use("/categories", checkAuth, checkRoles('admin', 'superAdmin'), categoryRouter);

@@ -9,7 +9,7 @@ export const updateProfileSchema = z.object({
   image: z.string().optional()
 });
 
-export const profilePhotoSchema = z.object({
+export const photoSchema = z.object({
   mimetype: z.string().refine((mimetype) => {
     return ['image/jpeg', 'image/png', 'image/webp'].includes(mimetype);
   }, 'IMAGE_TYPE_NOT_SUPPORTED'),
