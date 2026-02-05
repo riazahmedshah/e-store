@@ -1,8 +1,8 @@
 import { ErrorRequestHandler } from "express";
+import { MulterError } from "multer";
 import { ZodError } from "zod";
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  // console.log("Global Error Handler triggered!");
   let statusCode = err.statusCode || 500;
   let message = err.message || "Internal Server Error";
   let details = err.details || undefined;
@@ -10,11 +10,20 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if(err instanceof ZodError){
     statusCode = 400,
     message = "Validation Error",
-    details = err.issues.map((issue) => {
-      field: issue.path.join('.');
+    details = err.issues.map((issue) => ({
+      field: issue.path.join('.'),
       message: issue.message
-    })
+    }))
+  } else if(err instanceof MulterError){
+    statusCode = 400;
+    message = "File Upload Error";
+    details = {
+      code: err.code,
+      field: err.field,
+      storageErrors: err.message
+    };
   }
+  
   res.status(statusCode).json({
     success: false,
     message,

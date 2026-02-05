@@ -8,12 +8,12 @@ interface IVariant {
 };
 
 export interface IProduct extends Document {
+  _id: Types.ObjectId,
   title:string;
   description: string;
   category: Types.ObjectId;
   gender:'Men' | 'Women';
   keywords: string[];
-  mainImage:string;
   images: string[];
   variants: IVariant[];
 };
@@ -42,12 +42,9 @@ const productSchema = new Schema<IProduct>({
     type:[String],
     required:true
   },
-  mainImage:{
-    type:String,
-    reuired:true
-  },
   images:{
-    type:[String]
+    type:[String],
+    required: true,
   },
   variants: [{
     sku: { 
@@ -71,7 +68,6 @@ const productSchema = new Schema<IProduct>({
     }
   }]
 },{
-  strict:'throw',
   timestamps: true,
   versionKey:false
 });

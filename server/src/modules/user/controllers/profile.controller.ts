@@ -3,9 +3,10 @@ import { AppError } from "@/utils/appError.js";
 import { asyncHandler } from "@/utils/asyncHandler.js";
 import { ResponseHandle } from "@/utils/responseHandler.js";
 import { NextFunction, Request, Response } from "express";
-import { photoSchema, updateProfileSchema } from "../schemas/user.schema.js";
+import { updateProfileSchema } from "../schemas/user.schema.js";
 import { removeUndefinedFromObject } from "@/utils/removeUndefinedFromObject.js";
-import { UploadService } from "../services/upload.service.js";
+import { UploadService } from "../../../services/upload.service.js";
+import { photoSchema } from "@/validations/image.validation.js";
 
 export const profile = asyncHandler(async (req:Request, res:Response) => {
   const user = req.user;
@@ -30,8 +31,9 @@ export const updateProfile = asyncHandler(async(req:Request, res:Response, next:
   if(profilePhoto){
     const { success, error} = photoSchema.safeParse(profilePhoto);
     if(!success) throw error;
+    const key = `users/${userId}/photo_${Date.now()}.webp`
     try {
-      const path = await UploadService.uploadProfileImage(userId as string, profilePhoto.buffer, userToUpdate.image) 
+      const path = await UploadService.uploadSingleImage(key, profilePhoto.buffer, userToUpdate.image) 
       result.image = path;
     } catch (error) {
       console.log('S3 uploads error!');

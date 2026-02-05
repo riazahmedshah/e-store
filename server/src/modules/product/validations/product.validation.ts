@@ -1,0 +1,20 @@
+import { z } from "zod"
+
+const categoryIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "INVALID_OBJECT_ID");
+
+const variantSchema = z.object({
+  // sku:z.string(),
+  size: z.enum(['S', 'M', 'L', 'XL', 'XXL', 'XXXL']),
+  stock: z.coerce.number().int().nonnegative("STOCK_CANNOT_BE_NEGATIVE"),
+  price: z.coerce.number().positive("PRICE_MUST_BE_GREATER_THAN_0")
+});
+
+export const createProductSchema = z.object({
+  title: z.string().min(3,"TITLE_TOO_SHORT").max(50, "TITLE_TOO_LONG"),
+  description: z.string().min(1, "DESCRIPTION_NOT_PROVIDED").max(500, "DESCRIPTION_TOO_LONG"),
+  category: categoryIdSchema,
+  gender: z.enum(["Men", "Women"]),
+  keywords: z.string().array().nonempty("AT_LEAST_ONE_KEYWORD_REQUIRED"),
+  images: z.string().array().optional(),
+  variants: variantSchema.array().nonempty()
+});
