@@ -7,5 +7,6 @@ const upload = multer({
   },
 })
 
-export const userProfileMiddleware = upload.single('profilePhoto')
+export const userProfileMiddleware = upload.single('profilePhoto');
+export const productImageMiddleware = upload.single('productPhoto');
 export const productImagesMiddleware = upload.array('productsPhoto',4);

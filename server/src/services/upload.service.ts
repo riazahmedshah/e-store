@@ -1,5 +1,6 @@
 import { StorageService } from "@/services/storage/storageService.js";
 import { processImage } from "@/services/storageHelper.js";
+import path from "node:path";
 
 export class UploadService {
   static async uploadSingleImage(key: string, body: Buffer, oldKey?: string) {
@@ -35,5 +36,19 @@ export class UploadService {
       return key;
     })
     return Promise.all(uploadPromise);
+  }
+
+  static async updateProductImage(key:string, productId:string, body:Buffer){
+    const idx = Number(path.basename(key).split("_")[1])
+    await StorageService.deleteFile(key);
+
+    const { processedBuffer, format} = await processImage(body, {
+      format:'webp',
+      width: 512,
+      height: 512
+    });
+    const newKey = `products/${productId}/img_${idx}_${Date.now()}.webp`
+    await StorageService.uploadFile(newKey, processedBuffer, format);
+    return newKey;
   }
 }
