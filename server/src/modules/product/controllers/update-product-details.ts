@@ -9,11 +9,11 @@ import { ResponseHandle } from "@/utils/responseHandler.js";
 
 export const updateProductDetails = asyncHandler(
   async(req:Request, res:Response) => {
-    const { id }= req.params;
+    const { productId }= req.params;
     const {success, data, error} = updateProductSchema.safeParse(req.body);
     if(!success) throw error;
 
-    const existingProduct = await Product.findById(id).select('+variants.stock').lean();
+    const existingProduct = await Product.findById(productId).select('+variants.stock').lean();
     if(!existingProduct) throw new AppError("Product not found to update",404);
     // console.log(existingProduct);
 
@@ -53,7 +53,7 @@ export const updateProductDetails = asyncHandler(
       title: newTitle,
       variants: finalVariants
     };
-    await Product.updateOne({_id: id}, {$set: dataToUpdate});
+    await Product.updateOne({_id: productId}, {$set: dataToUpdate});
 
     return ResponseHandle.success(res, "Product details updated successfully!");
   }

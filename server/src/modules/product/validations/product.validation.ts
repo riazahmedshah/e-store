@@ -2,7 +2,7 @@ import { z } from "zod"
 
 const categoryIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "INVALID_OBJECT_ID");
 
-const variantSchema = z.object({
+export const variantSchema = z.object({
   size: z.enum(['S', 'M', 'L', 'XL', 'XXL', 'XXXL']),
   stock: z.coerce.number().int().nonnegative("STOCK_CANNOT_BE_NEGATIVE"),
   price: z.coerce.number().positive("PRICE_MUST_BE_GREATER_THAN_0")
@@ -24,4 +24,11 @@ const baseUpdateSchema = createProductSchema.omit({images: true}).partial();
 
 export const updateProductSchema = baseUpdateSchema.extend({
   variants: updateVariantSchema.array().nonempty().optional()
+});
+
+export const stockUpdateSchema = z.object({
+  updates: z.array(z.object({
+    size: z.enum(['S', 'M', 'L', 'XL', 'XXL', 'XXXL']),
+    newStock: z.coerce.number().int().nonnegative("STOCK_CANNOT_BE_NEGATIVE")
+  })).min(1, "PROVIDE_AT_LEAST_ONE_UPDATE")
 });
