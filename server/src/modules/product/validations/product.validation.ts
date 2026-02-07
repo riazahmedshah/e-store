@@ -5,7 +5,6 @@ const categoryIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "INVALID_OBJECT_I
 export const variantSchema = z.object({
   size: z.enum(['S', 'M', 'L', 'XL', 'XXL', 'XXXL']),
   stock: z.coerce.number().int().nonnegative("STOCK_CANNOT_BE_NEGATIVE"),
-  price: z.coerce.number().positive("PRICE_MUST_BE_GREATER_THAN_0")
 });
 
 const updateVariantSchema = variantSchema.omit({'stock' : true}).partial();
@@ -17,7 +16,8 @@ export const createProductSchema = z.object({
   gender: z.enum(["Men", "Women"]),
   keywords: z.string().array().nonempty("AT_LEAST_ONE_KEYWORD_REQUIRED"),
   images: z.string().array().optional(),
-  variants: variantSchema.array().nonempty()
+  variants: variantSchema.array().nonempty(),
+  price: z.coerce.number().positive("PRICE_MUST_BE_GREATER_THAN_0")
 });
 
 const baseUpdateSchema = createProductSchema.omit({images: true}).partial();

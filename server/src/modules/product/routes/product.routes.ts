@@ -7,55 +7,62 @@ import { updateProductDetails } from "../controllers/update-product-details.js";
 import { updateProductImage } from "../controllers/update-product-image.js";
 import { addVariant } from "../controllers/add-variant.js";
 import { updateStock } from "../controllers/update-stock.js";
+import { listProductByIdAdmin, listProductsAdmin } from "../controllers/admin-list-products.js";
+import { listProducts, listProductsById } from "../controllers/list-products.js";
 
 const router = Router();
 
+router.get(
+  "/",
+  listProducts
+);
+
+router.get(
+  "/:productId",
+  listProductsById
+);
+
+
+router.use(checkAuth, checkRoles("admin", "superAdmin"));
+
+router.get(
+  "/admin/all",
+  listProductsAdmin
+);
+
+router.get(
+  "/admin/:productId",
+  listProductByIdAdmin
+);
+
 router.post(
   "/",
-  checkAuth,
-  checkRoles("admin", "superAdmin"),
   productImagesMiddleware,
   createProduct,
 );
 
 router.patch(
   "/:productId",
-  checkAuth,
-  checkRoles("admin", "superAdmin"),
   updateProductDetails,
 );
 
 router.patch(
   "/:productId/image",
-  checkAuth,
-  checkRoles("admin", "superAdmin"),
   productImageMiddleware,
   updateProductImage
 );
 
 router.patch(
   "/:productId/variant",
-  checkAuth,
-  checkRoles("admin", "superAdmin"),
   addVariant
 );
 
 router.patch(
   "/:productId/stock",
-  checkAuth,
-  checkRoles("admin", "superAdmin"),
   updateStock
 );
 
-// router.get(
-//   "/",
-//   listProducts
-// );
 
-// router.get(
-//   "/:id",
-//   listProductsById
-// );
 
 
 

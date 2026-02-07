@@ -4,7 +4,6 @@ interface IVariant {
   sku:string;
   size: 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL';
   stock:number;
-  price:number
 };
 
 export interface IProduct extends Document {
@@ -15,7 +14,10 @@ export interface IProduct extends Document {
   gender:'Men' | 'Women';
   keywords: string[];
   images: string[];
+  price:number;
   variants: IVariant[];
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 const productSchema = new Schema<IProduct>({
@@ -36,7 +38,8 @@ const productSchema = new Schema<IProduct>({
   category:{
     type:Schema.Types.ObjectId,
     ref:'Category',
-    required:true
+    required:true,
+    index: true
   },
   keywords:{
     type:[String],
@@ -56,17 +59,18 @@ const productSchema = new Schema<IProduct>({
       type: String, 
       required: true 
     },
-    price: { 
-      type: Number, 
-      required: true 
-    },
     stock: { 
       type: Number, 
       required: true, 
       min: 0, 
       select: false 
     }
-  }]
+  }],
+  price: { 
+    type: Number, 
+    required: true,
+    index:true
+  }
 },{
   timestamps: true,
   versionKey:false
