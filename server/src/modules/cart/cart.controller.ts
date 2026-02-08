@@ -51,4 +51,27 @@ export const getCartItems = asyncHandler(
 
     return ResponseHandle.success(res, "Items Fetched", cart);
   }
+);
+
+export const deleteItem = asyncHandler(
+  async(req:Request, res:Response) => {
+    const userId = req.user?._id;
+    const { itemId } = req.params;
+
+    const item = await Cart.findOne({userId,"cart._id": itemId},{"cart.$":1});
+    if(!item) throw new AppError("Item not found", 404);
+    const cartItem = item.cart[0];
+    if(cartItem?.quantity === 1){
+      await Cart.updateOne({userId},{
+        $pull: {cart: {_id: itemId}}
+      })
+    } else{
+      // decrement quantity by one
+      await Cart.updateOne({userId, "cart._id": itemId},{
+        $inc: {"cart.$.quantity": -1}
+      })
+    }
+    
+    return ResponseHandle.success(res, "Cart updated successfully")
+  }
 )
