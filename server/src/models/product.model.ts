@@ -2,7 +2,7 @@ import { Document, model, Schema, Types } from "mongoose";
 
 interface IVariant {
   sku:string;
-  size: 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL';
+  size: string; // changed
   stock:number;
 };
 
@@ -56,8 +56,8 @@ const productSchema = new Schema<IProduct>({
       unique: true 
     },
     size: { 
-      type: String, 
-      required: true 
+      type: String,
+      required: true
     },
     stock: { 
       type: Number, 

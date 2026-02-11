@@ -1,6 +1,6 @@
+import { mongooseIdSchema } from "@/validations/id.validation.js";
 import { z } from "zod"
 
-const categoryIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "INVALID_OBJECT_ID");
 
 export const variantSchema = z.object({
   size: z.enum(['S', 'M', 'L', 'XL', 'XXL', 'XXXL']),
@@ -12,7 +12,7 @@ const updateVariantSchema = variantSchema.omit({'stock' : true}).partial();
 export const createProductSchema = z.object({
   title: z.string().min(3,"TITLE_TOO_SHORT").max(50, "TITLE_TOO_LONG"),
   description: z.string().min(1, "DESCRIPTION_NOT_PROVIDED").max(500, "DESCRIPTION_TOO_LONG"),
-  category: categoryIdSchema,
+  category: mongooseIdSchema,
   gender: z.enum(["Men", "Women"]),
   keywords: z.string().array().nonempty("AT_LEAST_ONE_KEYWORD_REQUIRED"),
   images: z.string().array().optional(),

@@ -1,6 +1,6 @@
 import { Document, model, Schema, Types } from "mongoose";
 
-interface Items{
+export interface IItems{
   productId: Types.ObjectId;
   title: string;
   price: number;
@@ -10,11 +10,10 @@ interface Items{
 
 export interface IOrder extends Document {
   userId: Types.ObjectId;
-  items: Items[];
+  items: IItems[];
   totalAmount: number;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
   address: string;
-  orderDate: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,15 +52,11 @@ const orderSchema = new Schema<IOrder>({
   status:{
     type:String,
     enum:["PENDING", "CONFIRMED", "CANCELLED"],
-    required: true
+    default: 'PENDING'
   },
   address:{
     type: String,
     required: true
-  },
-  orderDate:{
-    type: Date,
-    required:true
   }
 },{
   timestamps: true,
