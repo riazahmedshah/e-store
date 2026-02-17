@@ -1,10 +1,11 @@
 import { asyncHandler } from "@/utils/asyncHandler.js";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Order } from "@/models/order.model.js";
 import { ResponseHandle } from "@/utils/responseHandler.js";
 import { orderSchema } from "../validations/order.validation.js";
 import { Product } from "@/models/product.model.js";
 import { AppError } from "@/utils/appError.js";
+import mongoose from "mongoose";
 
 export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?._id
@@ -47,6 +48,7 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
     }
     orderItems.push({
       productId: productData.productId,
+      sku: sku,
       title: productData.title,
       price,
       quantity: totalRequestedQty,
@@ -65,3 +67,43 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
 
   return ResponseHandle.success(res, "Order created successfully", order);
 });
+
+export const conformOrder = async(req:Request, res:Response, next:NextFunction) => {
+  const orderId = req.params.orderId;
+  const userId = req.user?._id
+  const mongooseTransaction = await mongoose.startSession();
+  try {
+    mongooseTransaction.startTransaction();
+
+    const order = await Order.findOne({_id: orderId, userId}).lean().session(mongooseTransaction);
+    if(!order) throw new AppError("Order not found", 404);
+
+    // payment Service(later).
+
+    const orderedProducts = order.items.map((item) => item);
+
+    for (const item of orderedProducts){
+      const result = await Product.updateOne({
+        _id: item.productId,
+        "variants.sku": item.sku,
+        "variants.stock": {$gte: item.quantity}
+      },{
+        $inc: {"variants.$.stock": -item.quantity}
+      }, {
+        session: mongooseTransaction
+      });
+      if(result.matchedCount === 0) throw new AppError(`Stock check failed for ${item.title}`, 422)
+    }
+
+    await Order.findOneAndUpdate({_id: orderId}, {status: 'CONFIRMED'}, {session: mongooseTransaction});
+    await mongooseTransaction.commitTransaction()
+    return ResponseHandle.success(res, "Order is confirmed", 200);
+    
+  } catch (error) {
+    await mongooseTransaction.abortTransaction();
+    next(error)
+  } finally {
+    await mongooseTransaction.endSession();
+  }
+
+}
