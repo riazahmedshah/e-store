@@ -68,7 +68,7 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
   return ResponseHandle.success(res, "Order created successfully", order);
 });
 
-export const conformOrder = async(req:Request, res:Response, next:NextFunction) => {
+export const confirmOrder = async(req:Request, res:Response, next:NextFunction) => {
   const orderId = req.params.orderId;
   const userId = req.user?._id
   const mongooseTransaction = await mongoose.startSession();
